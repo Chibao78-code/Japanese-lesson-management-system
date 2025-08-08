@@ -22,7 +22,7 @@ export default function CompletedLessons() {
       <div className="list-group mt-3">
         {lessons.map((a) => (
           <Link
-            to={`/se184159/lessons/${a.id}`}
+            to={`/se184280/lessons/${a.id}`}
             key={a.id}
             className="list-group-item list-group-item-action d-flex align-items-center"
           >
