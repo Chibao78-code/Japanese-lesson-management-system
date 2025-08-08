@@ -23,6 +23,11 @@ export default function Navbar() {
             </Link>
           </li>
           <li className="nav-item">
+            <Link className="nav-link" to="/se184280 /incomplete-lessons">
+              Incomplete Lessons
+            </Link>
+          </li>
+          <li className="nav-item">
             <Link className="nav-link" to="/se184280 /add-lesson">
               Add Lesson
             </Link>

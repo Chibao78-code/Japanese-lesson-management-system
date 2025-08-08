@@ -3,6 +3,7 @@ import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import AllLessons from "./pages/AllLessons";
 import CompletedLessons from "./pages/CompletedLessons";
+import IncompleteLessons from "./pages/IncompleteLessons";
 import LessonDetail from "./pages/LessonDetail";
 import AddLesson from "./pages/AddLesson";
 import EditLesson from "./pages/EditLesson";
@@ -18,6 +19,10 @@ function App() {
           <Route
             path="/se184280 /completed-lessons"
             element={<CompletedLessons />}
+          />
+          <Route
+            path="/se184280 /incomplete-lessons"
+            element={<IncompleteLessons />}
           />
           <Route path="/se184280 /lessons/:id" element={<LessonDetail />} />
           <Route path="/se184280 /add-lesson" element={<AddLesson />} />
