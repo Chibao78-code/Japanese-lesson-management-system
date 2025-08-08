@@ -3,7 +3,8 @@ export default function Navbar() {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-3">
       <Link className="navbar-brand" to="/">
-        FER202
+      Japanese lesson management system
+
       </Link>
       <div className="collapse navbar-collapse">
         <ul className="navbar-nav me-auto">
