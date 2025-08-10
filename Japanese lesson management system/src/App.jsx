@@ -8,9 +8,25 @@ import LessonDetail from "./pages/LessonDetail";
 import AddLesson from "./pages/AddLesson";
 import EditLesson from "./pages/EditLesson";
 
-function App() {
+function AppContent() {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center min-vh-100">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Đang tải...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated()) {
+    return <Login />;
+  }
+
   return (
-    <Router>
+    <>
       <Navbar />
       <div className="container mt-4">
         <Routes>
@@ -29,7 +45,17 @@ function App() {
           <Route path="/se184280 /edit-lesson/:id" element={<EditLesson />} />
         </Routes>
       </div>
-    </Router>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </AuthProvider>
   );
 }
 
