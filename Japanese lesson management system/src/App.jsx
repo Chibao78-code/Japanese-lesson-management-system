@@ -7,6 +7,8 @@ import IncompleteLessons from "./pages/IncompleteLessons";
 import LessonDetail from "./pages/LessonDetail";
 import AddLesson from "./pages/AddLesson";
 import EditLesson from "./pages/EditLesson";
+import Login from "./pages/Login";
+import { AuthProvider, useAuth } from "./context/demo";
 
 function AppContent() {
   const { isAuthenticated, isLoading } = useAuth();
