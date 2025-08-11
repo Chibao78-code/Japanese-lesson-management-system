@@ -8,8 +8,8 @@ import LessonDetail from "./pages/LessonDetail";
 import AddLesson from "./pages/AddLesson";
 import EditLesson from "./pages/EditLesson";
 import Login from "./pages/Login";
-import { AuthProvider, useAuth } from "./context/demo";
-import { ProtectedRoute } from "./context/ProtectedRoute";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function AppContent() {
   const { isAuthenticated, isLoading } = useAuth();
