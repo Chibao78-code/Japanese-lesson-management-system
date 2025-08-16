@@ -20,7 +20,7 @@ export default function CompletedLessons() {
     filteredCount
   } = useLessons('completed');
 
-  const { ToastComponent } = useToast();
+  const { showToast, ToastComponent } = useToast();
 
   if (isLoading) {
     return (

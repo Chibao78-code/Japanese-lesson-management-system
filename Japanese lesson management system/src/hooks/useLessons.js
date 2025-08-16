@@ -13,7 +13,6 @@ export const useLessons = (filter = 'all') => {
   const [sortBy, setSortBy] = useState("newest");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { showToast } = useToast();
 
   // Fetch lessons from API
   const fetchLessons = async () => {
@@ -24,7 +23,6 @@ export const useLessons = (filter = 'all') => {
       setLessons(response.data);
     } catch (err) {
       setError('Không thể tải dữ liệu bài học');
-      showToast('Lỗi khi tải dữ liệu bài học', 'error');
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -125,14 +123,12 @@ export const useLessons = (filter = 'all') => {
     try {
       await axios.delete(`${BASE}/${id}`);
       setLessons(prev => prev.filter(lesson => lesson.id !== id));
-      showToast("Đã xóa bài học thành công!", "success");
       return true;
     } catch (err) {
       console.error(err);
-      showToast("Lỗi khi xóa bài học!", "error");
       return false;
     }
-  }, [showToast]);
+  }, []);
 
   // Update lesson completion status with useCallback
   const toggleLessonCompletion = useCallback(async (id, newStatus) => {
@@ -141,17 +137,12 @@ export const useLessons = (filter = 'all') => {
       setLessons(prev => prev.map(lesson => 
         lesson.id === id ? { ...lesson, isCompleted: newStatus } : lesson
       ));
-      showToast(
-        newStatus ? "Đã đánh dấu hoàn thành!" : "Đã đánh dấu chưa hoàn thành!", 
-        "success"
-      );
       return true;
     } catch (err) {
       console.error(err);
-      showToast("Lỗi khi cập nhật trạng thái!", "error");
       return false;
     }
-  }, [showToast]);
+  }, []);
 
   // Reset filters with useCallback
   const resetFilters = useCallback(() => {

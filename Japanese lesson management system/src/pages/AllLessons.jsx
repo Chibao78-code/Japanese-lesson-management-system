@@ -22,7 +22,7 @@ export default function AllLessons() {
     filteredCount
   } = useLessons('all');
 
-  const { ToastComponent } = useToast();
+  const { showToast, ToastComponent } = useToast();
   const { showConfirm, ConfirmModalComponent } = useConfirmModal();
 
   const handleDelete = (lesson) => {
@@ -32,7 +32,14 @@ export default function AllLessons() {
       confirmText: "🗑️ Xóa",
       cancelText: "Hủy",
       type: "danger",
-      onConfirm: () => deleteLesson(lesson.id)
+      onConfirm: async () => {
+        const success = await deleteLesson(lesson.id);
+        if (success) {
+          showToast("Đã xóa bài học thành công!", "success");
+        } else {
+          showToast("Lỗi khi xóa bài học!", "error");
+        }
+      }
     });
   };
 

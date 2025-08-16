@@ -21,10 +21,15 @@ export default function Home() {
     filteredCount
   } = useLessons('pending');
 
-  const { ToastComponent } = useToast();
+  const { showToast, ToastComponent } = useToast();
 
   const handleMarkComplete = async (lesson) => {
-    await toggleLessonCompletion(lesson.id, true);
+    const success = await toggleLessonCompletion(lesson.id, true);
+    if (success) {
+      showToast("Đã đánh dấu hoàn thành!", "success");
+    } else {
+      showToast("Lỗi khi cập nhật trạng thái!", "error");
+    }
   };
 
   if (isLoading) {

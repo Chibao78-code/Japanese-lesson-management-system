@@ -1,11 +1,9 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 /**
  * Custom hook for keyboard shortcuts
  */
 export const useKeyboardShortcuts = () => {
-  const navigate = useNavigate();
 
   useEffect(() => {
     const handleKeyPress = (event) => {
@@ -24,23 +22,23 @@ export const useKeyboardShortcuts = () => {
         switch (event.key.toLowerCase()) {
           case 'h':
             event.preventDefault();
-            navigate('/');
+            window.location.href = '/';
             break;
           case 'a':
             event.preventDefault();
-            navigate('/se184280/all-lessons');
+            window.location.href = '/se184280/all-lessons';
             break;
           case 'c':
             event.preventDefault();
-            navigate('/se184280/completed-lessons');
+            window.location.href = '/se184280/completed-lessons';
             break;
           case 'i':
             event.preventDefault();
-            navigate('/se184280/incomplete-lessons');
+            window.location.href = '/se184280/incomplete-lessons';
             break;
           case 'n':
             event.preventDefault();
-            navigate('/se184280/add-lesson');
+            window.location.href = '/se184280/add-lesson';
             break;
           default:
             break;
@@ -76,7 +74,7 @@ export const useKeyboardShortcuts = () => {
     return () => {
       document.removeEventListener('keydown', handleKeyPress);
     };
-  }, [navigate]);
+  }, []);
 
   // Return shortcuts info for help display
   return {
