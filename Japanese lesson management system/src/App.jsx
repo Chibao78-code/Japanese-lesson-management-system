@@ -6,8 +6,12 @@ import IncompleteLessons from "./pages/IncompleteLessons";
 import LessonDetail from "./pages/LessonDetail";
 import AddLesson from "./pages/AddLesson";
 import EditLesson from "./pages/EditLesson";
+import KeyboardShortcutsHelp from "./components/KeyboardShortcutsHelp";
+import useKeyboardShortcuts from "./hooks/useKeyboardShortcuts";
 
 function App() {
+  const { shortcuts } = useKeyboardShortcuts();
+
   return (
     <Router>
       <Navbar />
@@ -28,6 +32,7 @@ function App() {
           <Route path="/se184280/edit-lesson/:id" element={<EditLesson />} />
         </Routes>
       </div>
+      <KeyboardShortcutsHelp shortcuts={shortcuts} />
     </Router>
   );
 }

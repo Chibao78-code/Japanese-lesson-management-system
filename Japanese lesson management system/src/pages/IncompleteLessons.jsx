@@ -1,194 +1,198 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
-
-const BASE = import.meta.env.VITE_API_BASE_URL;
-const LEVEL_OPTIONS = ["All", "N1", "N2", "N3", "N4", "N5"];
+import useLessons from "../hooks/useLessons";
+import { useToast } from "../components/Toast";
+import SearchAndFilterControls from "../components/SearchAndFilterControls";
 
 export default function IncompleteLessons() {
-  const [lessons, setLessons] = useState([]);
-  const [filteredLessons, setFilteredLessons] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedLevel, setSelectedLevel] = useState("All");
-  const [sortBy, setSortBy] = useState("newest");
+  const {
+    lessons,
+    isLoading,
+    error,
+    searchTerm,
+    setSearchTerm,
+    selectedLevel,
+    setSelectedLevel,
+    sortBy,
+    setSortBy,
+    toggleLessonCompletion,
+    resetFilters,
+    LEVEL_OPTIONS,
+    totalCount,
+    filteredCount
+  } = useLessons('incomplete');
 
-  useEffect(() => {
-    axios.get(`${BASE}`).then((res) => {
-      const incomplete = res.data
-        .filter((a) => a.isCompleted !== true && a.isCompleted !== "true")
-        .sort((a, b) => b.id - a.id);
-      setLessons(incomplete);
-      setFilteredLessons(incomplete);
-    });
-  }, []);
+  const { ToastComponent } = useToast();
 
-  // Filter and search effect
-  useEffect(() => {
-    let filtered = lessons;
+  const handleMarkComplete = async (lesson) => {
+    await toggleLessonCompletion(lesson.id, true);
+  };
 
-    // Filter by search term (lesson title)
-    if (searchTerm.trim()) {
-      filtered = filtered.filter((lesson) =>
-        lesson.lessonTitle.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
+  if (isLoading) {
+    return (
+      <div className="container py-4">
+        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "300px" }}>
+          <div className="text-center">
+            <div className="spinner-border text-warning" role="status">
+              <span className="visually-hidden">Đang tải...</span>
+            </div>
+            <p className="mt-3 text-muted">Đang tải bài học chưa hoàn thành...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-    // Filter by level
-    if (selectedLevel !== "All") {
-      filtered = filtered.filter((lesson) => lesson.level === selectedLevel);
-    }
-
-    // Sort lessons
-    if (sortBy === "newest") {
-      filtered = filtered.sort((a, b) => b.id - a.id);
-    } else if (sortBy === "oldest") {
-      filtered = filtered.sort((a, b) => a.id - b.id);
-    } else if (sortBy === "title") {
-      filtered = filtered.sort((a, b) => 
-        a.lessonTitle.localeCompare(b.lessonTitle)
-      );
-    } else if (sortBy === "time") {
-      filtered = filtered.sort((a, b) => a.estimatedTime - b.estimatedTime);
-    }
-
-    setFilteredLessons(filtered);
-  }, [lessons, searchTerm, selectedLevel, sortBy]);
+  if (error) {
+    return (
+      <div className="container py-4">
+        <div className="alert alert-danger text-center">
+          <h4>❌ Lỗi tải dữ liệu</h4>
+          <p>{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="btn btn-primary"
+          >
+            🔄 Thử lại
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container py-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2>📝 Incomplete Lessons</h2>
-        <Link to="/se184280/add-lesson" className="btn btn-success">
-          + Add New Lesson
-        </Link>
-      </div>
-
-      {/* Search and Filter Controls */}
-      <div className="row mb-4">
-        <div className="col-md-4 mb-3">
-          <label className="form-label">🔍 Search by title:</label>
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Enter lesson title..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        <div className="col-md-3 mb-3">
-          <label className="form-label">📊 Filter by level:</label>
-          <select
-            className="form-select"
-            value={selectedLevel}
-            onChange={(e) => setSelectedLevel(e.target.value)}
-          >
-            {LEVEL_OPTIONS.map((level) => (
-              <option key={level} value={level}>
-                {level}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="col-md-3 mb-3">
-          <label className="form-label">🔄 Sort by:</label>
-          <select
-            className="form-select"
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-          >
-            <option value="newest">Newest First</option>
-            <option value="oldest">Oldest First</option>
-            <option value="title">Title A-Z</option>
-            <option value="time">Duration (Short to Long)</option>
-          </select>
-        </div>
-        <div className="col-md-2 mb-3 d-flex align-items-end">
-          <button
-            className="btn btn-outline-secondary w-100"
-            onClick={() => {
-              setSearchTerm("");
-              setSelectedLevel("All");
-              setSortBy("newest");
-            }}
-          >
-            🔄 Reset
-          </button>
+        <h2>📝 Bài học chưa hoàn thành</h2>
+        <div className="d-flex gap-2">
+          <Link to="/se184280/completed-lessons" className="btn btn-outline-success">
+            ✅ Đã hoàn thành
+          </Link>
+          <Link to="/se184280/add-lesson" className="btn btn-success">
+            ➕ Thêm bài học
+          </Link>
         </div>
       </div>
 
-      {/* Results Summary */}
-      <div className="mb-3">
-        <span className="badge bg-warning text-dark me-2">
-          Found {filteredLessons.length} incomplete lesson(s)
-        </span>
-        {searchTerm && (
-          <span className="badge bg-secondary me-2">
-            Search: "{searchTerm}"
-          </span>
-        )}
-        {selectedLevel !== "All" && (
-          <span className="badge bg-primary me-2">
-            Level: {selectedLevel}
-          </span>
-        )}
-      </div>
+      <SearchAndFilterControls
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        selectedLevel={selectedLevel}
+        setSelectedLevel={setSelectedLevel}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+        resetFilters={resetFilters}
+        LEVEL_OPTIONS={LEVEL_OPTIONS}
+        totalCount={totalCount}
+        filteredCount={filteredCount}
+        searchPlaceholder="Tìm bài học cần hoàn thành..."
+      />
 
-      {/* Incomplete Lessons List */}
-      <div className="list-group">
-        {filteredLessons.map((lesson) => (
-          <Link
-            to={`/se184280/lessons/${lesson.id}`}
-            key={lesson.id}
-            className="list-group-item list-group-item-action d-flex align-items-center hover-shadow"
-          >
-            <img
-              src={lesson.lessonImage}
-              alt={lesson.lessonTitle}
-              width="60"
-              height="60"
-              style={{ objectFit: "cover", borderRadius: "8px" }}
-              className="me-3"
-            />
-            <div className="flex-grow-1">
-              <div className="d-flex justify-content-between align-items-start">
-                <div>
-                  <div className="fw-bold mb-1">{lesson.lessonTitle}</div>
-                  <div>
+      {/* Lessons Cards */}
+      <div className="row">
+        {lessons.map((lesson) => (
+          <div className="col-md-4 mb-4" key={lesson.id}>
+            <div className="card h-100 shadow-sm border-warning">
+              <Link to={`/se184280/lessons/${lesson.id}`}>
+                <img
+                  src={lesson.lessonImage}
+                  className="card-img-top"
+                  alt={lesson.lessonTitle}
+                  style={{ height: "200px", objectFit: "cover" }}
+                />
+              </Link>
+              <div className="card-body d-flex flex-column">
+                <h5 className="card-title">{lesson.lessonTitle}</h5>
+                
+                {/* Quick Preview */}
+                {lesson.content && (
+                  <p className="card-text text-muted small">
+                    {lesson.content.length > 80 
+                      ? `${lesson.content.substring(0, 80)}...` 
+                      : lesson.content}
+                  </p>
+                )}
+                
+                <div className="mt-auto">
+                  <p className="card-text mb-2">
                     <span className="badge bg-info me-2">{lesson.level}</span>
-                    <small className="text-muted">⏱️ {lesson.estimatedTime} min</small>
+                    <span className="text-muted">⏱️ {lesson.estimatedTime} phút</span>
+                  </p>
+                  
+                  {/* Vocabulary Preview */}
+                  {lesson.vocabulary && Array.isArray(lesson.vocabulary) && lesson.vocabulary.length > 0 && (
+                    <div className="mb-2">
+                      <div className="text-muted small">Từ vựng:</div>
+                      <div>
+                        {lesson.vocabulary.slice(0, 3).map((word, index) => (
+                          <span key={index} className="badge bg-light text-dark me-1 small">
+                            {word}
+                          </span>
+                        ))}
+                        {lesson.vocabulary.length > 3 && (
+                          <span className="text-muted small">+{lesson.vocabulary.length - 3} từ khác</span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="d-flex gap-2">
+                    <Link 
+                      to={`/se184280/lessons/${lesson.id}`}
+                      className="btn btn-primary btn-sm flex-fill"
+                    >
+                      📖 Bắt đầu học
+                    </Link>
+                    <button 
+                      onClick={() => handleMarkComplete(lesson)}
+                      className="btn btn-success btn-sm"
+                      title="Đánh dấu hoàn thành"
+                    >
+                      ✅
+                    </button>
+                    <Link 
+                      to={`/se184280/edit-lesson/${lesson.id}`}
+                      className="btn btn-outline-warning btn-sm"
+                      title="Chỉnh sửa"
+                    >
+                      ✏️
+                    </Link>
                   </div>
                 </div>
-                <div className="d-flex flex-column align-items-end">
-                  <span className="badge bg-warning text-dark mb-2">📝 Incomplete</span>
-                  <small className="text-primary">Click to start →</small>
-                </div>
+              </div>
+              <div className="card-footer bg-warning text-dark text-center">
+                <small>📝 Chưa hoàn thành</small>
               </div>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
 
       {/* No Results Messages */}
-      {filteredLessons.length === 0 && lessons.length > 0 && (
+      {filteredCount === 0 && totalCount > 0 && (
         <div className="text-center py-5">
           <div className="text-muted">
-            <h4>🔍 No incomplete lessons found</h4>
-            <p>Try adjusting your search criteria or filters.</p>
+            <h4>🔍 Không tìm thấy bài học nào</h4>
+            <p>Thử điều chỉnh từ khóa tìm kiếm hoặc bộ lọc.</p>
+            <button onClick={resetFilters} className="btn btn-outline-primary">
+              🔄 Đặt lại bộ lọc
+            </button>
           </div>
         </div>
       )}
 
-      {lessons.length === 0 && (
+      {totalCount === 0 && (
         <div className="text-center py-5">
           <div className="text-muted">
-            <h4>🎉 All lessons completed!</h4>
-            <p>Congratulations! You've finished all your lessons.</p>
+            <h4>🎉 Tuyệt vời! Đã hoàn thành hết rồi!</h4>
+            <p>Bạn đã hoàn thành tất cả bài học. Hãy thêm bài học mới để tiếp tục học tập.</p>
             <Link to="/se184280/add-lesson" className="btn btn-success mt-3">
-              📝 Add More Lessons
+              ➕ Thêm bài học mới
             </Link>
           </div>
         </div>
       )}
+
+      <ToastComponent />
     </div>
   );
 }

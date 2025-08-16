@@ -1,152 +1,94 @@
-// pages/AllLessons.jsx
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import useLessons from "../hooks/useLessons";
 import { useToast } from "../components/Toast";
-
-const BASE = import.meta.env.VITE_API_BASE_URL;
-const LEVEL_OPTIONS = ["All", "N1", "N2", "N3", "N4", "N5"];
+import { useConfirmModal } from "../components/ConfirmModal";
+import SearchAndFilterControls from "../components/SearchAndFilterControls";
 
 export default function AllLessons() {
-  const [lessons, setLessons] = useState([]);
-  const [filteredLessons, setFilteredLessons] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedLevel, setSelectedLevel] = useState("All");
-  const [sortBy, setSortBy] = useState("newest");
-  const { showToast, ToastComponent } = useToast();
+  const {
+    lessons,
+    isLoading,
+    error,
+    searchTerm,
+    setSearchTerm,
+    selectedLevel,
+    setSelectedLevel,
+    sortBy,
+    setSortBy,
+    deleteLesson,
+    resetFilters,
+    LEVEL_OPTIONS,
+    totalCount,
+    filteredCount
+  } = useLessons('all');
 
-  const fetch = () => {
-    axios.get(`${BASE}`).then((res) => {
-      const data = res.data.sort((a, b) => b.id - a.id);
-      setLessons(data);
-      setFilteredLessons(data);
+  const { ToastComponent } = useToast();
+  const { showConfirm, ConfirmModalComponent } = useConfirmModal();
+
+  const handleDelete = (lesson) => {
+    showConfirm({
+      title: "Xóa bài học",
+      message: `Bạn có chắc chắn muốn xóa bài học "${lesson.lessonTitle}"? Hành động này không thể hoàn tác.`,
+      confirmText: "🗑️ Xóa",
+      cancelText: "Hủy",
+      type: "danger",
+      onConfirm: () => deleteLesson(lesson.id)
     });
   };
 
-  useEffect(fetch, []);
+  if (isLoading) {
+    return (
+      <div className="container py-4">
+        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "300px" }}>
+          <div className="text-center">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Đang tải...</span>
+            </div>
+            <p className="mt-3 text-muted">Đang tải danh sách bài học...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-  // Filter and search effect
-  useEffect(() => {
-    let filtered = lessons;
-
-    // Filter by search term (lesson title)
-    if (searchTerm.trim()) {
-      filtered = filtered.filter((lesson) =>
-        lesson.lessonTitle.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    // Filter by level
-    if (selectedLevel !== "All") {
-      filtered = filtered.filter((lesson) => lesson.level === selectedLevel);
-    }
-
-    // Sort lessons
-    if (sortBy === "newest") {
-      filtered = filtered.sort((a, b) => b.id - a.id);
-    } else if (sortBy === "oldest") {
-      filtered = filtered.sort((a, b) => a.id - b.id);
-    } else if (sortBy === "title") {
-      filtered = filtered.sort((a, b) => 
-        a.lessonTitle.localeCompare(b.lessonTitle)
-      );
-    } else if (sortBy === "time") {
-      filtered = filtered.sort((a, b) => a.estimatedTime - b.estimatedTime);
-    }
-
-    setFilteredLessons(filtered);
-  }, [lessons, searchTerm, selectedLevel, sortBy]);
-
-  const handleDelete = async (id) => {
-    if (!confirm("Bạn chắc chắn muốn xóa?")) return;
-    try {
-      await axios.delete(`${BASE}/${id}`);
-      showToast("Đã xóa bài học thành công!", "success");
-      fetch();
-    } catch (err) {
-      console.error(err);
-      showToast("Lỗi khi xóa bài học!", "error");
-    }
-  };
+  if (error) {
+    return (
+      <div className="container py-4">
+        <div className="alert alert-danger text-center">
+          <h4>❌ Lỗi tải dữ liệu</h4>
+          <p>{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="btn btn-primary"
+          >
+            🔄 Thử lại
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container py-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2>📚 All Lessons</h2>
+        <h2>📚 Tất cả bài học</h2>
         <Link to="/se184280/add-lesson" className="btn btn-success">
-          + Add Lesson
+          ➕ Thêm bài học
         </Link>
       </div>
 
-      {/* Search and Filter Controls */}
-      <div className="row mb-4">
-        <div className="col-md-4 mb-3">
-          <label className="form-label">🔍 Search by title:</label>
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Enter lesson title..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        <div className="col-md-3 mb-3">
-          <label className="form-label">📊 Filter by level:</label>
-          <select
-            className="form-select"
-            value={selectedLevel}
-            onChange={(e) => setSelectedLevel(e.target.value)}
-          >
-            {LEVEL_OPTIONS.map((level) => (
-              <option key={level} value={level}>
-                {level}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="col-md-3 mb-3">
-          <label className="form-label">🔄 Sort by:</label>
-          <select
-            className="form-select"
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-          >
-            <option value="newest">Newest First</option>
-            <option value="oldest">Oldest First</option>
-            <option value="title">Title A-Z</option>
-            <option value="time">Duration (Short to Long)</option>
-          </select>
-        </div>
-        <div className="col-md-2 mb-3 d-flex align-items-end">
-          <button
-            className="btn btn-outline-secondary w-100"
-            onClick={() => {
-              setSearchTerm("");
-              setSelectedLevel("All");
-              setSortBy("newest");
-            }}
-          >
-            🔄 Reset
-          </button>
-        </div>
-      </div>
-
-      {/* Results Summary */}
-      <div className="mb-3">
-        <span className="badge bg-info me-2">
-          Found {filteredLessons.length} lesson(s)
-        </span>
-        {searchTerm && (
-          <span className="badge bg-secondary me-2">
-            Search: "{searchTerm}"
-          </span>
-        )}
-        {selectedLevel !== "All" && (
-          <span className="badge bg-primary me-2">
-            Level: {selectedLevel}
-          </span>
-        )}
-      </div>
+      <SearchAndFilterControls
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        selectedLevel={selectedLevel}
+        setSelectedLevel={setSelectedLevel}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+        resetFilters={resetFilters}
+        LEVEL_OPTIONS={LEVEL_OPTIONS}
+        totalCount={totalCount}
+        filteredCount={filteredCount}
+      />
 
       {/* Lessons Table */}
       <div className="table-responsive">
@@ -154,15 +96,15 @@ export default function AllLessons() {
           <thead className="table-dark">
             <tr>
               <th>ID</th>
-              <th>Title</th>
-              <th>Level</th>
-              <th>Time (min)</th>
-              <th>Status</th>
-              <th>Actions</th>
+              <th>Tiêu đề</th>
+              <th>Cấp độ</th>
+              <th>Thời gian (phút)</th>
+              <th>Trạng thái</th>
+              <th>Hành động</th>
             </tr>
           </thead>
           <tbody>
-            {filteredLessons.map((lesson) => (
+            {lessons.map((lesson) => (
               <tr
                 key={lesson.id}
                 onClick={() =>
@@ -187,27 +129,31 @@ export default function AllLessons() {
                     }`}
                   >
                     {lesson.isCompleted === true || lesson.isCompleted === "true"
-                      ? "✅ Completed"
-                      : "📝 Incomplete"}
+                      ? "✅ Đã hoàn thành"
+                      : "📝 Chưa hoàn thành"}
                   </span>
                 </td>
                 <td>
-                  <Link
-                    to={`/se184280/edit-lesson/${lesson.id}`}
-                    className="btn btn-warning btn-sm me-1"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    ✏️ Edit
-                  </Link>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(lesson.id);
-                    }}
-                    className="btn btn-danger btn-sm"
-                  >
-                    🗑️ Delete
-                  </button>
+                  <div className="d-flex gap-1">
+                    <Link
+                      to={`/se184280/edit-lesson/${lesson.id}`}
+                      className="btn btn-warning btn-sm"
+                      onClick={(e) => e.stopPropagation()}
+                      title="Chỉnh sửa"
+                    >
+                      ✏️
+                    </Link>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(lesson);
+                      }}
+                      className="btn btn-danger btn-sm"
+                      title="Xóa"
+                    >
+                      🗑️
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -216,24 +162,32 @@ export default function AllLessons() {
       </div>
 
       {/* No Results Message */}
-      {filteredLessons.length === 0 && lessons.length > 0 && (
+      {filteredCount === 0 && totalCount > 0 && (
         <div className="text-center py-5">
           <div className="text-muted">
-            <h4>🔍 No lessons found</h4>
-            <p>Try adjusting your search criteria or filters.</p>
+            <h4>🔍 Không tìm thấy bài học nào</h4>
+            <p>Thử điều chỉnh từ khóa tìm kiếm hoặc bộ lọc.</p>
+            <button onClick={resetFilters} className="btn btn-outline-primary">
+              🔄 Đặt lại bộ lọc
+            </button>
           </div>
         </div>
       )}
 
-      {lessons.length === 0 && (
+      {totalCount === 0 && (
         <div className="text-center py-5">
           <div className="text-muted">
-            <h4>📚 No lessons available</h4>
-            <p>Start by adding your first lesson!</p>
+            <h4>📚 Chưa có bài học nào</h4>
+            <p>Hãy bắt đầu bằng cách thêm bài học đầu tiên!</p>
+            <Link to="/se184280/add-lesson" className="btn btn-success mt-3">
+              ➕ Thêm bài học đầu tiên
+            </Link>
           </div>
         </div>
       )}
+
       <ToastComponent />
+      <ConfirmModalComponent />
     </div>
   );
 }
