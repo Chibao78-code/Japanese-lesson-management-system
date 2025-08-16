@@ -1,0 +1,70 @@
+{
+  "lessons": [
+    {
+      "id": 1,
+      "lessonTitle": "Hiragana cơ bản - あいうえお",
+      "level": "N5",
+      "estimatedTime": 30,
+      "lessonImage": "https://via.placeholder.com/300x200/FFB6C1/000000?text=Hiragana",
+      "isCompleted": false,
+      "content": "Học 5 ký tự Hiragana đầu tiên: あ (a), い (i), う (u), え (e), お (o)",
+      "vocabulary": ["あ", "い", "う", "え", "お"],
+      "grammar": "Hiragana là bảng chữ cái phiên âm cơ bản của tiếng Nhật"
+    },
+    {
+      "id": 2,
+      "lessonTitle": "Katakana cơ bản - アイウエオ",
+      "level": "N5",
+      "estimatedTime": 25,
+      "lessonImage": "https://via.placeholder.com/300x200/98FB98/000000?text=Katakana",
+      "isCompleted": true,
+      "content": "Học 5 ký tự Katakana đầu tiên: ア (a), イ (i), ウ (u), エ (e), オ (o)",
+      "vocabulary": ["ア", "イ", "ウ", "エ", "オ"],
+      "grammar": "Katakana được dùng cho từ ngoại lai và từ mượn"
+    },
+    {
+      "id": 3,
+      "lessonTitle": "Kanji cơ bản - Số đếm",
+      "level": "N4",
+      "estimatedTime": 45,
+      "lessonImage": "https://via.placeholder.com/300x200/87CEEB/000000?text=Kanji",
+      "isCompleted": false,
+      "content": "Học các Kanji số từ 1-10: 一、二、三、四、五、六、七、八、九、十",
+      "vocabulary": ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十"],
+      "grammar": "Các số cơ bản trong tiếng Nhật"
+    },
+    {
+      "id": 4,
+      "lessonTitle": "Chào hỏi cơ bản",
+      "level": "N5",
+      "estimatedTime": 20,
+      "lessonImage": "https://via.placeholder.com/300x200/DDA0DD/000000?text=Greetings",
+      "isCompleted": true,
+      "content": "Các cách chào hỏi phổ biến trong tiếng Nhật",
+      "vocabulary": ["おはよう", "こんにちは", "こんばんは", "はじめまして"],
+      "grammar": "Cách sử dụng các lời chào theo thời gian trong ngày"
+    },
+    {
+      "id": 5,
+      "lessonTitle": "Giới thiệu bản thân",
+      "level": "N4",
+      "estimatedTime": 35,
+      "lessonImage": "https://via.placeholder.com/300x200/F0E68C/000000?text=Introduction",
+      "isCompleted": false,
+      "content": "Cách giới thiệu tên, tuổi, nghề nghiệp",
+      "vocabulary": ["わたし", "なまえ", "としゅう", "しごと"],
+      "grammar": "Cấu trúc câu cơ bản với です/である"
+    },
+    {
+      "id": 6,
+      "lessonTitle": "Gia đình và người thân",
+      "level": "N3",
+      "estimatedTime": 40,
+      "lessonImage": "https://via.placeholder.com/300x200/FFA07A/000000?text=Family",
+      "isCompleted": false,
+      "content": "Từ vựng về các thành viên trong gia đình",
+      "vocabulary": ["かぞく", "おとうさん", "おかあさん", "あに", "あね"],
+      "grammar": "Cách gọi tên và nói về người thân"
+    }
+  ]
+}

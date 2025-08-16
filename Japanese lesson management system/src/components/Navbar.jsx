@@ -1,13 +1,6 @@
 import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 
 export default function Navbar() {
-  const { user, logout } = useAuth();
-
-  const handleLogout = () => {
-    logout();
-  };
-
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-3">
       <Link className="navbar-brand" to="/">
@@ -53,20 +46,11 @@ export default function Navbar() {
         </ul>
         
         <ul className="navbar-nav">
-          <li className="nav-item dropdown">
-            <span className="navbar-text me-3">
-              <i className="bi bi-person-circle me-1"></i>
-              Xin chào, <strong>{user?.username}</strong>
-            </span>
-          </li>
           <li className="nav-item">
-            <button
-              className="btn btn-outline-light btn-sm"
-              onClick={handleLogout}
-            >
-              <i className="bi bi-box-arrow-right me-1"></i>
-              Đăng xuất
-            </button>
+            <span className="navbar-text">
+              <i className="bi bi-person-circle me-1"></i>
+              <strong>Hệ thống quản lý bài học tiếng Nhật</strong>
+            </span>
           </li>
         </ul>
       </div>
