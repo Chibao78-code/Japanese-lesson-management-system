@@ -24,22 +24,22 @@ export default function Navbar() {
             </Link>
           </li>
           <li className="nav-item">
-            <Link className="nav-link" to="/se184280 /all-lessons">
+            <Link className="nav-link" to="/se184280/all-lessons">
               <i className="bi bi-book me-1"></i>Tất cả bài học
             </Link>
           </li>
           <li className="nav-item">
-            <Link className="nav-link" to="/se184280 /completed-lessons">
+            <Link className="nav-link" to="/se184280/completed-lessons">
               <i className="bi bi-check-circle me-1"></i>Đã hoàn thành
             </Link>
           </li>
           <li className="nav-item">
-            <Link className="nav-link" to="/se184280 /incomplete-lessons">
+            <Link className="nav-link" to="/se184280/incomplete-lessons">
               <i className="bi bi-clock me-1"></i>Chưa hoàn thành
             </Link>
           </li>
           <li className="nav-item">
-            <Link className="nav-link" to="/se184280 /add-lesson">
+            <Link className="nav-link" to="/se184280/add-lesson">
               <i className="bi bi-plus-circle me-1"></i>Thêm bài học
             </Link>
           </li>

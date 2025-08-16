@@ -14,18 +14,18 @@ function App() {
       <div className="container mt-4">
         <Routes>
           <Route path="/" element={<AllLessons />} />
-          <Route path="/se184280 /all-lessons" element={<AllLessons />} />
+          <Route path="/se184280/all-lessons" element={<AllLessons />} />
           <Route
-            path="/se184280 /completed-lessons"
+            path="/se184280/completed-lessons"
             element={<CompletedLessons />}
           />
           <Route
-            path="/se184280 /incomplete-lessons"
+            path="/se184280/incomplete-lessons"
             element={<IncompleteLessons />}
           />
-          <Route path="/se184280 /lessons/:id" element={<LessonDetail />} />
-          <Route path="/se184280 /add-lesson" element={<AddLesson />} />
-          <Route path="/se184280 /edit-lesson/:id" element={<EditLesson />} />
+          <Route path="/se184280/lessons/:id" element={<LessonDetail />} />
+          <Route path="/se184280/add-lesson" element={<AddLesson />} />
+          <Route path="/se184280/edit-lesson/:id" element={<EditLesson />} />
         </Routes>
       </div>
     </Router>

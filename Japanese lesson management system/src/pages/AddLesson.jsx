@@ -1,7 +1,7 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useToast } from "../components/Toast";
 
 const BASE = import.meta.env.VITE_API_BASE_URL;
 const LEVEL_OPTIONS = ["N1", "N2", "N3", "N4", "N5"];
@@ -12,134 +12,333 @@ export default function AddLesson() {
     lessonImage: "",
     level: "N5",
     estimatedTime: "",
+    content: "",
+    vocabulary: "",
+    grammar: "",
     isCompleted: false,
   });
   const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [imagePreview, setImagePreview] = useState("");
   const nav = useNavigate();
+  const { showToast, ToastComponent } = useToast();
 
   const validate = () => {
     const e = {};
-    if (!/\w+\s+\w+/.test(data.lessonTitle.trim()))
-      e.lessonTitle = "Must contain at least two words";
-    try {
-      new URL(data.lessonImage.trim());
-    } catch {
-      e.lessonImage = "Invalid URL";
+    
+    // Lesson title validation
+    if (!data.lessonTitle.trim()) {
+      e.lessonTitle = "Tên bài học là bắt buộc";
+    } else if (data.lessonTitle.trim().length < 10) {
+      e.lessonTitle = "Tên bài học phải có ít nhất 10 ký tự";
     }
-    if (!data.level) e.level = "Required";
-    if (isNaN(+data.estimatedTime) || +data.estimatedTime <= 0)
-      e.estimatedTime = "Must be a positive number";
+
+    // Image URL validation
+    if (!data.lessonImage.trim()) {
+      e.lessonImage = "URL hình ảnh là bắt buộc";
+    } else {
+      try {
+        new URL(data.lessonImage.trim());
+      } catch {
+        e.lessonImage = "URL hình ảnh không hợp lệ";
+      }
+    }
+
+    // Level validation
+    if (!data.level) e.level = "Cấp độ là bắt buộc";
+
+    // Estimated time validation
+    if (!data.estimatedTime.trim()) {
+      e.estimatedTime = "Thời gian học là bắt buộc";
+    } else if (isNaN(+data.estimatedTime) || +data.estimatedTime <= 0 || +data.estimatedTime > 300) {
+      e.estimatedTime = "Thời gian học phải từ 1-300 phút";
+    }
+
+    // Content validation
+    if (!data.content.trim()) {
+      e.content = "Nội dung bài học là bắt buộc";
+    } else if (data.content.trim().length < 20) {
+      e.content = "Nội dung bài học phải có ít nhất 20 ký tự";
+    }
+
     return e;
   };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    const newValue = type === "checkbox" ? checked : value;
+    
     setData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: newValue,
     }));
+
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: null,
+      }));
+    }
+
+    // Update image preview
+    if (name === "lessonImage" && value.trim()) {
+      try {
+        new URL(value.trim());
+        setImagePreview(value.trim());
+      } catch {
+        setImagePreview("");
+      }
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const e2 = validate();
-    if (Object.keys(e2).length) return setErrors(e2);
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length) {
+      setErrors(validationErrors);
+      return;
+    }
 
+    setIsLoading(true);
     try {
+      // Process vocabulary (convert comma-separated string to array)
+      const vocabularyArray = data.vocabulary.trim() 
+        ? data.vocabulary.split(',').map(word => word.trim()).filter(word => word)
+        : [];
+
       await axios.post(`${BASE}`, {
         ...data,
+        vocabulary: vocabularyArray,
         isCompleted: !!data.isCompleted,
         estimatedTime: +data.estimatedTime,
       });
-      alert("Added successfully!");
-      nav("/se184280 /all-lessons");
+      
+      // Show success message
+      showToast("Thêm bài học thành công!", "success");
+      setTimeout(() => nav("/se184280/all-lessons"), 1500);
     } catch (err) {
       console.error(err);
-      alert("Error submitting!");
+      showToast("Lỗi khi thêm bài học. Vui lòng thử lại!", "error");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="container mt-4">
-      <h2>Add New Lesson</h2>
-      <form onSubmit={handleSubmit} noValidate>
-        {/* lessonTitle */}
-        <div className="mb-3">
-          <label className="form-label">Lesson Title</label>
-          <input
-            name="lessonTitle"
-            type="text"
-            className="form-control"
-            value={data.lessonTitle}
-            onChange={handleChange}
-          />
-          {errors.lessonTitle && (
-            <div className="text-danger">{errors.lessonTitle}</div>
-          )}
+      <div className="row">
+        <div className="col-lg-8 mx-auto">
+          <div className="card shadow">
+            <div className="card-header bg-success text-white">
+              <h2 className="mb-0">➕ Thêm bài học mới</h2>
+            </div>
+            <div className="card-body">
+              <form onSubmit={handleSubmit} noValidate>
+                <div className="row">
+                  {/* Left Column */}
+                  <div className="col-md-6">
+                    {/* Lesson Title */}
+                    <div className="mb-3">
+                      <label className="form-label fw-bold">
+                        📚 Tên bài học <span className="text-danger">*</span>
+                      </label>
+                      <input
+                        name="lessonTitle"
+                        type="text"
+                        className={`form-control ${errors.lessonTitle ? 'is-invalid' : ''}`}
+                        value={data.lessonTitle}
+                        onChange={handleChange}
+                        placeholder="VD: Hiragana cơ bản - あいうえお"
+                      />
+                      {errors.lessonTitle && (
+                        <div className="invalid-feedback">{errors.lessonTitle}</div>
+                      )}
+                    </div>
+
+                    {/* Level & Time */}
+                    <div className="row">
+                      <div className="col-6">
+                        <div className="mb-3">
+                          <label className="form-label fw-bold">
+                            📊 Cấp độ <span className="text-danger">*</span>
+                          </label>
+                          <select
+                            name="level"
+                            className={`form-select ${errors.level ? 'is-invalid' : ''}`}
+                            value={data.level}
+                            onChange={handleChange}
+                          >
+                            {LEVEL_OPTIONS.map((l) => (
+                              <option key={l} value={l}>
+                                {l}
+                              </option>
+                            ))}
+                          </select>
+                          {errors.level && <div className="invalid-feedback">{errors.level}</div>}
+                        </div>
+                      </div>
+                      <div className="col-6">
+                        <div className="mb-3">
+                          <label className="form-label fw-bold">
+                            ⏱️ Thời gian (phút) <span className="text-danger">*</span>
+                          </label>
+                          <input
+                            name="estimatedTime"
+                            type="number"
+                            min="1"
+                            max="300"
+                            className={`form-control ${errors.estimatedTime ? 'is-invalid' : ''}`}
+                            value={data.estimatedTime}
+                            onChange={handleChange}
+                            placeholder="30"
+                          />
+                          {errors.estimatedTime && (
+                            <div className="invalid-feedback">{errors.estimatedTime}</div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="mb-3">
+                      <label className="form-label fw-bold">
+                        📖 Nội dung bài học <span className="text-danger">*</span>
+                      </label>
+                      <textarea
+                        name="content"
+                        rows="4"
+                        className={`form-control ${errors.content ? 'is-invalid' : ''}`}
+                        value={data.content}
+                        onChange={handleChange}
+                        placeholder="Mô tả chi tiết nội dung sẽ học trong bài..."
+                      />
+                      {errors.content && (
+                        <div className="invalid-feedback">{errors.content}</div>
+                      )}
+                    </div>
+
+                    {/* Vocabulary */}
+                    <div className="mb-3">
+                      <label className="form-label fw-bold">📝 Từ vựng</label>
+                      <textarea
+                        name="vocabulary"
+                        rows="3"
+                        className="form-control"
+                        value={data.vocabulary}
+                        onChange={handleChange}
+                        placeholder="Nhập từ vựng, phân cách bằng dấu phẩy. VD: あ, い, う, え, お"
+                      />
+                      <div className="form-text">
+                        Nhập các từ vựng phân cách bằng dấu phẩy
+                      </div>
+                    </div>
+
+                    {/* Grammar */}
+                    <div className="mb-3">
+                      <label className="form-label fw-bold">📚 Ngữ pháp</label>
+                      <textarea
+                        name="grammar"
+                        rows="3"
+                        className="form-control"
+                        value={data.grammar}
+                        onChange={handleChange}
+                        placeholder="Mô tả ngữ pháp chính trong bài học..."
+                      />
+                    </div>
+
+                    {/* Completion Status */}
+                    <div className="form-check mb-3">
+                      <input
+                        name="isCompleted"
+                        type="checkbox"
+                        className="form-check-input"
+                        checked={data.isCompleted}
+                        onChange={handleChange}
+                        id="chkCompleted"
+                      />
+                      <label className="form-check-label fw-bold" htmlFor="chkCompleted">
+                        ✅ Đánh dấu đã hoàn thành
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Right Column */}
+                  <div className="col-md-6">
+                    {/* Image URL */}
+                    <div className="mb-3">
+                      <label className="form-label fw-bold">
+                        🖼️ URL hình ảnh <span className="text-danger">*</span>
+                      </label>
+                      <input
+                        name="lessonImage"
+                        type="url"
+                        className={`form-control ${errors.lessonImage ? 'is-invalid' : ''}`}
+                        value={data.lessonImage}
+                        onChange={handleChange}
+                        placeholder="https://example.com/image.jpg"
+                      />
+                      {errors.lessonImage && (
+                        <div className="invalid-feedback">{errors.lessonImage}</div>
+                      )}
+                    </div>
+
+                    {/* Image Preview */}
+                    <div className="mb-3">
+                      <label className="form-label fw-bold">👁️ Xem trước hình ảnh</label>
+                      <div className="border rounded p-3 text-center" style={{ minHeight: "200px" }}>
+                        {imagePreview ? (
+                          <img
+                            src={imagePreview}
+                            alt="Preview"
+                            className="img-fluid rounded"
+                            style={{ maxHeight: "300px", objectFit: "cover" }}
+                            onError={() => setImagePreview("")}
+                          />
+                        ) : (
+                          <div className="text-muted d-flex align-items-center justify-content-center h-100">
+                            <div>
+                              <i className="bi bi-image" style={{ fontSize: "3rem" }}></i>
+                              <p className="mt-2">Nhập URL hình ảnh để xem trước</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Submit Buttons */}
+                <div className="d-flex justify-content-between pt-3 border-top">
+                  <button 
+                    type="button"
+                    onClick={() => nav(-1)}
+                    className="btn btn-secondary"
+                    disabled={isLoading}
+                  >
+                    ← Quay lại
+                  </button>
+                  <button 
+                    type="submit" 
+                    className="btn btn-success"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                        Đang thêm...
+                      </>
+                    ) : (
+                      "➕ Thêm bài học"
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
-        {/* lessonImage */}
-        <div className="mb-3">
-          <label className="form-label">Lesson Image URL</label>
-          <input
-            name="lessonImage"
-            type="text"
-            className="form-control"
-            value={data.lessonImage}
-            onChange={handleChange}
-          />
-          {errors.lessonImage && (
-            <div className="text-danger">{errors.lessonImage}</div>
-          )}
-        </div>
-        {/* level */}
-        <div className="mb-3">
-          <label className="form-label">Level</label>
-          <select
-            name="level"
-            className="form-select"
-            value={data.level}
-            onChange={handleChange}
-          >
-            {LEVEL_OPTIONS.map((l) => (
-              <option key={l} value={l}>
-                {l}
-              </option>
-            ))}
-          </select>
-          {errors.level && <div className="text-danger">{errors.level}</div>}
-        </div>
-        {/* estimatedTime */}
-        <div className="mb-3">
-          <label className="form-label">Estimated Time (minutes)</label>
-          <input
-            name="estimatedTime"
-            type="number"
-            className="form-control"
-            value={data.estimatedTime}
-            onChange={handleChange}
-          />
-          {errors.estimatedTime && (
-            <div className="text-danger">{errors.estimatedTime}</div>
-          )}
-        </div>
-        {/* isCompleted */}
-        <div className="form-check mb-3">
-          <input
-            name="isCompleted"
-            type="checkbox"
-            className="form-check-input"
-            checked={data.isCompleted}
-            onChange={handleChange}
-            id="chkCompleted"
-          />
-          <label className="form-check-label" htmlFor="chkCompleted">
-            Completed
-          </label>
-        </div>
-        <button type="submit" className="btn btn-primary">
-          Add Lesson
-        </button>
-      </form>
+      </div>
+      <ToastComponent />
     </div>
   );
 }

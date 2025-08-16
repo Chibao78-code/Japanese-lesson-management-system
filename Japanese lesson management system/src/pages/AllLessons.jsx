@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { useToast } from "../components/Toast";
 
 const BASE = import.meta.env.VITE_API_BASE_URL;
 const LEVEL_OPTIONS = ["All", "N1", "N2", "N3", "N4", "N5"];
@@ -12,6 +13,7 @@ export default function AllLessons() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("All");
   const [sortBy, setSortBy] = useState("newest");
+  const { showToast, ToastComponent } = useToast();
 
   const fetch = () => {
     axios.get(`${BASE}`).then((res) => {
@@ -55,12 +57,16 @@ export default function AllLessons() {
     setFilteredLessons(filtered);
   }, [lessons, searchTerm, selectedLevel, sortBy]);
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (!confirm("Bạn chắc chắn muốn xóa?")) return;
-    axios.delete(`${BASE}/${id}`).then(() => {
-      alert("Đã xóa!");
+    try {
+      await axios.delete(`${BASE}/${id}`);
+      showToast("Đã xóa bài học thành công!", "success");
       fetch();
-    });
+    } catch (err) {
+      console.error(err);
+      showToast("Lỗi khi xóa bài học!", "error");
+    }
   };
 
   return (
@@ -227,6 +233,7 @@ export default function AllLessons() {
           </div>
         </div>
       )}
+      <ToastComponent />
     </div>
   );
 }
