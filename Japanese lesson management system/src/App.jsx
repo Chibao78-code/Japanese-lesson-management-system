@@ -8,6 +8,7 @@ import IncompleteLessons from "./pages/IncompleteLessons";
 import LessonDetail from "./pages/LessonDetail";
 import AddLesson from "./pages/AddLesson";
 import EditLesson from "./pages/EditLesson";
+import ImportExport from "./pages/ImportExport";
 import KeyboardShortcutsHelp from "./components/KeyboardShortcutsHelp";
 import useKeyboardShortcuts from "./hooks/useKeyboardShortcuts";
 
@@ -34,6 +35,7 @@ function App() {
           <Route path="/se184280/lessons/:id" element={<LessonDetail />} />
           <Route path="/se184280/add-lesson" element={<AddLesson />} />
           <Route path="/se184280/edit-lesson/:id" element={<EditLesson />} />
+          <Route path="/se184280/import-export" element={<ImportExport />} />
         </Routes>
       </div>
       <KeyboardShortcutsHelp shortcuts={shortcuts} />

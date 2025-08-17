@@ -50,6 +50,11 @@ export default function Navbar() {
               <i className="bi bi-plus-circle me-1"></i>Thêm bài học
             </Link>
           </li>
+          <li className="nav-item">
+            <Link className="nav-link" to="/se184280/import-export">
+              <i className="bi bi-download me-1"></i>Import/Export
+            </Link>
+          </li>
         </ul>
         
         <ul className="navbar-nav">
