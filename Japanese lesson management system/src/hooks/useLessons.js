@@ -41,12 +41,10 @@ export const useLessons = (filter = 'all') => {
           lesson.isCompleted === true || lesson.isCompleted === "true"
         );
       case 'incomplete':
+      case 'pending': // alias for incomplete - used by Home page
         return lessons.filter(lesson => 
+          lesson.isCompleted === false || lesson.isCompleted === "false" ||
           lesson.isCompleted !== true && lesson.isCompleted !== "true"
-        );
-      case 'pending': // same as incomplete but for Home page
-        return lessons.filter(lesson => 
-          lesson.isCompleted === false || lesson.isCompleted === "false"
         );
       default:
         return lessons;

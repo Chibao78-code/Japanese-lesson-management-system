@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
 import AllLessons from "./pages/AllLessons";
 import CompletedLessons from "./pages/CompletedLessons";
 import IncompleteLessons from "./pages/IncompleteLessons";
@@ -17,7 +18,7 @@ function App() {
       <Navbar />
       <div className="container mt-4">
         <Routes>
-          <Route path="/" element={<AllLessons />} />
+          <Route path="/" element={<Home />} />
           <Route path="/se184280/all-lessons" element={<AllLessons />} />
           <Route
             path="/se184280/completed-lessons"
