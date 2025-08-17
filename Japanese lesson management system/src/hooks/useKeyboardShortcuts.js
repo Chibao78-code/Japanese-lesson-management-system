@@ -24,6 +24,10 @@ export const useKeyboardShortcuts = () => {
             event.preventDefault();
             window.location.href = '/';
             break;
+          case 'p':
+            event.preventDefault();
+            window.location.href = '/se184280/pending-lessons';
+            break;
           case 'a':
             event.preventDefault();
             window.location.href = '/se184280/all-lessons';
@@ -79,7 +83,8 @@ export const useKeyboardShortcuts = () => {
   // Return shortcuts info for help display
   return {
     shortcuts: [
-      { key: 'Ctrl+H', description: 'Trang chủ' },
+      { key: 'Ctrl+H', description: 'Dashboard' },
+      { key: 'Ctrl+P', description: 'Bài học chờ' },
       { key: 'Ctrl+A', description: 'Tất cả bài học' },
       { key: 'Ctrl+C', description: 'Bài học đã hoàn thành' },
       { key: 'Ctrl+I', description: 'Bài học chưa hoàn thành' },

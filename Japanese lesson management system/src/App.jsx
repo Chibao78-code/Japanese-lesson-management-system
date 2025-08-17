@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
 import AllLessons from "./pages/AllLessons";
 import CompletedLessons from "./pages/CompletedLessons";
@@ -18,7 +19,9 @@ function App() {
       <Navbar />
       <div className="container mt-4">
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/se184280/dashboard" element={<Dashboard />} />
+          <Route path="/se184280/pending-lessons" element={<Home />} />
           <Route path="/se184280/all-lessons" element={<AllLessons />} />
           <Route
             path="/se184280/completed-lessons"

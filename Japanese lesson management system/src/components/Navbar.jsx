@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
+import useTheme from "../hooks/useTheme";
 
 export default function Navbar() {
+  const { theme, toggleTheme } = useTheme();
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-3">
       <Link className="navbar-brand" to="/">
@@ -20,7 +22,12 @@ export default function Navbar() {
         <ul className="navbar-nav me-auto">
           <li className="nav-item">
             <Link className="nav-link" to="/">
-              <i className="bi bi-house me-1"></i>Trang chủ
+              <i className="bi bi-speedometer2 me-1"></i>Dashboard
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link className="nav-link" to="/se184280/pending-lessons">
+              <i className="bi bi-house me-1"></i>Bài học chờ
             </Link>
           </li>
           <li className="nav-item">
@@ -46,6 +53,15 @@ export default function Navbar() {
         </ul>
         
         <ul className="navbar-nav">
+          <li className="nav-item">
+            <button
+              className="btn btn-outline-light btn-sm me-3"
+              onClick={toggleTheme}
+              title={`Chuyển sang ${theme === 'light' ? 'dark' : 'light'} mode`}
+            >
+              {theme === 'light' ? '🌙' : '☀️'}
+            </button>
+          </li>
           <li className="nav-item">
             <span className="navbar-text">
               <i className="bi bi-person-circle me-1"></i>
