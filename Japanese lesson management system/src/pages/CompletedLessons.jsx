@@ -93,6 +93,9 @@ export default function CompletedLessons() {
                   className="card-img-top"
                   alt={lesson.lessonTitle}
                   style={{ height: "200px", objectFit: "cover" }}
+                  onError={(e) => {
+                    e.target.src = "https://via.placeholder.com/300x200/6c757d/ffffff?text=No+Image";
+                  }}
                 />
               </Link>
               <div className="card-body d-flex flex-column">

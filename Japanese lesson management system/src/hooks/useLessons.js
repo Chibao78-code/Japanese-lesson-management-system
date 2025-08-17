@@ -20,10 +20,22 @@ export const useLessons = (filter = 'all') => {
       setIsLoading(true);
       setError(null);
       const response = await axios.get(BASE);
-      setLessons(response.data);
+      
+      // Validate response data
+      if (response.data && Array.isArray(response.data)) {
+        setLessons(response.data);
+      } else {
+        throw new Error('Định dạng dữ liệu không hợp lệ');
+      }
     } catch (err) {
-      setError('Không thể tải dữ liệu bài học');
-      console.error(err);
+      const errorMessage = err.response?.status === 404 
+        ? 'Không tìm thấy dữ liệu bài học'
+        : err.response?.status >= 500
+        ? 'Lỗi máy chủ. Vui lòng thử lại sau.'
+        : 'Không thể tải dữ liệu bài học';
+      
+      setError(errorMessage);
+      console.error('Fetch lessons error:', err);
     } finally {
       setIsLoading(false);
     }
