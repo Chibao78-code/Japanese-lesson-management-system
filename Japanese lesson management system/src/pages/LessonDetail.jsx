@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useToast } from "../components/Toast";
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const BASE = import.meta.env.VITE_API_BASE_URL;
 
 export default function LessonDetail() {
   const { id } = useParams();
@@ -16,7 +16,7 @@ export default function LessonDetail() {
     const fetchLesson = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get(`${BASE_URL}/${id}`);
+        const response = await axios.get(`${BASE}/${id}`);
         setLesson(response.data);
         setError(null);
       } catch (err) {
@@ -33,7 +33,7 @@ export default function LessonDetail() {
   const handleToggleCompletion = async () => {
     try {
       const newStatus = !(lesson.isCompleted === true || lesson.isCompleted === "true");
-      await axios.patch(`${BASE_URL}/${lesson.id}`, { isCompleted: newStatus });
+      await axios.patch(`${BASE}/${lesson.id}`, { isCompleted: newStatus });
       setLesson(prev => ({ ...prev, isCompleted: newStatus }));
     } catch (err) {
       console.error(err);
